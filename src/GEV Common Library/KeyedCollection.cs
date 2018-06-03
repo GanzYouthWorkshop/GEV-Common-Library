@@ -26,7 +26,7 @@ namespace GEV.Common
         /// <summary>
         /// Returns the object with the given key.
         /// </summary>
-        /// <param name="o">Key </param>
+        /// <param name="o">Key.</param>
         /// <returns></returns>
         public T this[object o]
         {

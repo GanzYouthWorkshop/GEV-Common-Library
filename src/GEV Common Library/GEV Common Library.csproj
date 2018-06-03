@@ -49,10 +49,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communicators\CommunicatorBase.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="KeyedCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Communicators\TcpCommunicator.cs" />
+    <Compile Include="Communicators\UdpCommunicator.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

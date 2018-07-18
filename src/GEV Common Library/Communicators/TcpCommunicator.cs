@@ -17,6 +17,7 @@ namespace GEV.Common
         private TcpListener m_Listener;
         private TcpClient m_Client;
 
+        private bool m_IsListener;
 
         public TcpCommunicator()
         {
@@ -31,6 +32,20 @@ namespace GEV.Common
 
         public void Open()
         {
+            this.m_IsListener = true;
+
+            this.m_Thread = new Thread(this.Runner)
+            {
+                IsBackground = true
+            };
+            this.IsRunning = true;
+            this.m_Thread.Start();
+        }
+
+        public void Connect()
+        {
+            this.m_IsListener = false;
+
             this.m_Thread = new Thread(this.Runner)
             {
                 IsBackground = true
@@ -46,8 +61,17 @@ namespace GEV.Common
 
         private void Runner()
         {
-            this.m_Listener = new TcpListener(new IPEndPoint(IPAddress.Parse(this.IP), this.Port));
-            this.m_Client = this.m_Listener.AcceptTcpClient();
+            if(this.m_IsListener)
+            {
+                this.m_Listener = new TcpListener(new IPEndPoint(IPAddress.Parse(this.IP), this.Port));
+                this.m_Listener.Start();
+                this.m_Client = this.m_Listener.AcceptTcpClient();
+            }
+            else
+            {
+                this.m_Client = new TcpClient(this.IP, this.Port);
+            }
+
             NetworkStream ns = this.m_Client.GetStream();
             BinaryFormatter formatter = new BinaryFormatter();
 
@@ -60,11 +84,11 @@ namespace GEV.Common
                     if (ns.DataAvailable)
                     {
                         object obj = formatter.Deserialize(ns);
-                        if(obj is T)
+                        if (obj is T)
                         {
                             T msg = (T)obj;
 
-                            if (!this.DispatchMessageInEvent)
+                            if (this.DispatchMessageInEvent)
                             {
                                 this.PerformMessageReceived(msg);
                             }
@@ -80,8 +104,11 @@ namespace GEV.Common
                     if (this.OutMessages.TryDequeue(out send))
                     {
                         formatter.Serialize(ms, send);
-                        ms.CopyTo(ns);
+                        byte[] tmp = ms.ToArray();
+                        ns.Write(tmp, 0, tmp.Length);
                     }
+
+                    Thread.Sleep(5);
                 }
             }
         }

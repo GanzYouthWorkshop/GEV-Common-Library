@@ -12,24 +12,37 @@ using System.Threading.Tasks;
 
 namespace GEV.Common
 {
+    /// <summary>
+    /// TCP communicator class for message-based communication.
+    /// </summary>
+    /// <typeparam name="T">Type of the message objects the communicator willk handle.</typeparam>
     public class TcpCommunicator<T> : CommunicatorBase<T>
     {
-        private TcpListener m_Listener;
-        private TcpClient m_Client;
+        protected TcpListener m_Listener;
+        protected TcpClient m_Client;
 
-        private bool m_IsListener;
+        protected bool m_IsListener;
 
+        /// <summary>
+        /// Creates a new TCP communicator.
+        /// </summary>
         public TcpCommunicator()
         {
 
         }
 
+        /// <summary>
+        /// Creates a new TCP communicator.
+        /// </summary>
         public TcpCommunicator(string IP, int port)
         {
             this.IP = IP;
             this.Port = port;
         }
 
+        /// <summary>
+        /// Starts the communicator as a listener that a client can connect to.
+        /// </summary>
         public void Open()
         {
             this.m_IsListener = true;
@@ -42,6 +55,9 @@ namespace GEV.Common
             this.m_Thread.Start();
         }
 
+        /// <summary>
+        /// Starts the comunicator as a client that can connect to a listener.
+        /// </summary>
         public void Connect()
         {
             this.m_IsListener = false;
@@ -59,7 +75,20 @@ namespace GEV.Common
             this.IsRunning = false;
         }
 
-        private void Runner()
+        public bool Reonnect()
+        {
+            try
+            {
+                this.m_Client = new TcpClient(this.IP, this.Port);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        protected virtual void Runner()
         {
             if(this.m_IsListener)
             {
@@ -69,7 +98,7 @@ namespace GEV.Common
             }
             else
             {
-                this.m_Client = new TcpClient(this.IP, this.Port);
+                while (!this.Reonnect());
             }
 
             NetworkStream ns = this.m_Client.GetStream();
@@ -81,6 +110,20 @@ namespace GEV.Common
             {
                 while (this.IsRunning)
                 {
+                    if(this.m_Client == null || this.m_Client.Client.Connected)
+                    {
+                        if(!this.Reonnect())
+                        {
+                            this.PerformDisconnected();
+                            Thread.Sleep(5);
+                            continue;
+                        }
+                        else
+                        {
+                            this.PerformConnected();
+                        }
+                    }
+
                     if (ns.DataAvailable)
                     {
                         object obj = formatter.Deserialize(ns);

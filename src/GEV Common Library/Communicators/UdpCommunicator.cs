@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace GEV.Common
 {
+    /// <summary>
+    /// UDP communicator class for message-based communication.
+    /// </summary>
+    /// <typeparam name="T">Type of the message objects the communicator willk handle.</typeparam>
     public class UdpCommunicator<T> : CommunicatorBase<T>
     {
         private UdpClient m_Client;

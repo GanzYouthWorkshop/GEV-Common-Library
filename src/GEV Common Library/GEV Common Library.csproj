@@ -35,6 +35,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communicators\CommunicatorBase.cs" />
+    <Compile Include="Communicators\RawASCIICommunicator.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="KeyedCollection.cs" />

@@ -55,7 +55,7 @@
     <Compile Include="Communicators\CommunicatorBase.cs" />
     <Compile Include="Communicators\RawASCIICommunicator.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="DictionaryExtensions.cs" />
+    <Compile Include="GanzExtensions.cs" />
     <Compile Include="KeyedCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communicators\TcpCommunicator.cs" />
